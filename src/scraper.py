@@ -12,7 +12,6 @@ def minerar_termo(termo):
         page.goto(url)
 
         try:
-            # Espera os cards de anúncio
             page.wait_for_selector('div[class*="x1n2onr6"]', timeout=30000)
             cards = page.locator('div[class*="x1n2onr6"]').all()
 
@@ -21,7 +20,6 @@ def minerar_termo(termo):
 
             anuncio = cards[0]
 
-            # Tenta extrair informações com fallback
             try:
                 titulo = anuncio.inner_text().split("\n")[0]
             except:
@@ -54,6 +52,6 @@ def minerar_termo(termo):
 
         finally:
             browser.close()
+
 def buscar_oferta(termo):
-    # código da função
-    return resultado
+    return minerar_termo(termo)
