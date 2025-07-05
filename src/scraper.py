@@ -54,3 +54,6 @@ def minerar_termo(termo):
 
         finally:
             browser.close()
+def buscar_oferta(termo):
+    # código da função
+    return resultado
