@@ -1,9 +1,15 @@
-from flask import Flask, request, jsonify
-from src.scraper import buscar_oferta
 import os
+import sys
+from flask import Flask, request, jsonify
 from dotenv import load_dotenv
 
-# Carrega variáveis de ambiente se o arquivo existir
+# Adiciona a pasta 'src' no caminho de importação
+sys.path.append(os.path.join(os.path.dirname(__file__), 'src'))
+
+# Importa função do scraper
+from scraper import buscar_oferta
+
+# Carrega variáveis de ambiente se existir .env
 if os.path.exists(".env"):
     load_dotenv()
 
@@ -17,19 +23,19 @@ def home():
 def minera():
     try:
         data = request.get_json()
-
         if not data or "termo" not in data:
             return jsonify({"error": "Campo 'termo' é obrigatório."}), 400
 
         termo = data["termo"]
         print(f"Iniciando mineração para: {termo}")
+
+        # Chamada real ao scraper
         resultado = buscar_oferta(termo)
 
-        return jsonify({"status": 200, "data": resultado})
-    
+        return jsonify(resultado), 200
+
     except Exception as e:
-        print(f"Erro interno: {str(e)}")
-        return jsonify({"status": 500, "error": str(e)}), 500
+        return jsonify({"error": str(e)}), 500
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5001))
