@@ -1,8 +1,6 @@
 from flask import Flask, request, jsonify
 from src.user import user_bp
 from src.ofertas import ofertas_bp
-# from src.scraper import minerar_produto  # deixa comentado por enquanto se estiver dando erro
-
 import os
 
 app = Flask(__name__)
@@ -13,19 +11,23 @@ def home():
 
 @app.route("/api/minera", methods=["POST"])
 def minerar():
-    data = request.get_json()
-    termo = data.get("termo")
+    try:
+        data = request.get_json()
+        termo = data.get("termo")
 
-    if not termo:
-        return jsonify({"error": "Parâmetro 'termo' é obrigatório."}), 400
+        if not termo:
+            return jsonify({"error": "Parâmetro 'termo' é obrigatório."}), 400
 
-    print(f"Iniciando mineração para: {termo}")
+        print(f"Iniciando mineração para: {termo}")
 
-    # resultado = minerar_produto(termo)  # substituir depois quando estiver pronto
-    # return jsonify(resultado), 200
+        # resultado = minerar_produto(termo)  # substituir depois quando estiver pronto
+        # return jsonify(resultado), 200
 
-    # Temporário só para teste e evitar erro 500:
-    return jsonify({"mensagem": f"Busca por '{termo}' recebida com sucesso"}), 200
+        return jsonify({"mensagem": f"Busca por '{termo}' recebida com sucesso"}), 200
+
+    except Exception as e:
+        print("Erro:", e)
+        return jsonify({"error": "Erro interno no servidor."}), 500
 
 # Registro dos blueprints
 app.register_blueprint(user_bp, url_prefix="/api/user")
