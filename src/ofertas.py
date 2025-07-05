@@ -15,3 +15,18 @@ def minerar_ofertas():
     resultados = minerar_termo(termo)
 
     return jsonify(resultados)
+from flask import Blueprint, jsonify
+
+ofertas_bp = Blueprint("ofertas", __name__)
+
+@ofertas_bp.route("/ping", methods=["POST"])
+def ping():
+    return jsonify({"status": "ok"}), 200
+
+from flask import Blueprint, jsonify
+
+ofertas_bp = Blueprint("ofertas", __name__)
+
+@ofertas_bp.route("/api/ofertas/ping", methods=["POST"])
+def ping():
+    return jsonify({"mensagem": "Ping recebido com sucesso!"}), 200

@@ -13,13 +13,17 @@ CORS(app)
 def home():
     return "Minera Zap rodando com sucesso!"
 
-@app.route("/api/minera", methods=["POST"])
+@app.route('/api/minera', methods=['POST'])
 def minera():
     data = request.get_json()
-    termo = data.get("termo")
+    termo = data.get('termo')
 
-    if not termo:
-        return jsonify({"error": "Campo 'termo' é obrigatório"}), 400
+    try:
+        resultado = buscar_oferta(termo)
+        return jsonify(resultado)
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
+
 
     try:
         print(f"Iniciando mineração para: {termo}")
@@ -32,4 +36,6 @@ def minera():
 
 if __name__ == "__main__":
     app.run(debug=True, port=5001)
+import subprocess
+subprocess.run(["playwright", "install", "chromium"])
 

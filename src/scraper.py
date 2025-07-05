@@ -12,7 +12,8 @@ def minerar_termo(termo):
         page.goto(url)
 
         try:
-            page.wait_for_selector('div[class*="x1n2onr6"]', timeout=30000)
+            page.wait_for_selector('div[class*="x1n2onr6"]', timeout=10000)
+
             cards = page.locator('div[class*="x1n2onr6"]').all()
 
             if not cards:
