@@ -1,37 +1,36 @@
 from flask import Flask, request, jsonify
-from src.user import user_bp
-from src.ofertas import ofertas_bp
+from src.scraper import buscar_oferta
 import os
+from dotenv import load_dotenv
+
+# Carrega variáveis de ambiente se o arquivo existir
+if os.path.exists(".env"):
+    load_dotenv()
 
 app = Flask(__name__)
 
-@app.route("/")
+@app.route("/", methods=["GET"])
 def home():
-    return jsonify({"mensagem": "API MineraZap rodando com sucesso!"})
+    return jsonify({"mensagem": "API MineraZap está online!"})
 
 @app.route("/api/minera", methods=["POST"])
-def minerar():
+def minera():
     try:
         data = request.get_json()
-        termo = data.get("termo")
 
-        if not termo:
-            return jsonify({"error": "Parâmetro 'termo' é obrigatório."}), 400
+        if not data or "termo" not in data:
+            return jsonify({"error": "Campo 'termo' é obrigatório."}), 400
 
+        termo = data["termo"]
         print(f"Iniciando mineração para: {termo}")
+        resultado = buscar_oferta(termo)
 
-        # resultado = minerar_produto(termo)  # substituir depois quando estiver pronto
-        # return jsonify(resultado), 200
-
-        return jsonify({"mensagem": f"Busca por '{termo}' recebida com sucesso"}), 200
-
+        return jsonify({"status": 200, "data": resultado})
+    
     except Exception as e:
-        print("Erro:", e)
-        return jsonify({"error": "Erro interno no servidor."}), 500
-
-# Registro dos blueprints
-app.register_blueprint(user_bp, url_prefix="/api/user")
-app.register_blueprint(ofertas_bp, url_prefix="/api/ofertas")
+        print(f"Erro interno: {str(e)}")
+        return jsonify({"status": 500, "error": str(e)}), 500
 
 if __name__ == "__main__":
-    app.run(debug=True, host="0.0.0.0", port=int(os.environ.get("PORT", 5001)))
+    port = int(os.environ.get("PORT", 5001))
+    app.run(debug=True, host="0.0.0.0", port=port)
