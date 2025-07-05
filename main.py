@@ -23,7 +23,8 @@ def minera():
 
     try:
         print(f"Iniciando mineração para: {termo}")
-        **resultado = buscar_oferta(termo)**  # <-- aqui estava o erro
+        resultado = buscar_oferta(termo)
+
         return jsonify({"status": "sucesso", "resultado": resultado})
     except Exception as e:
         print(f"Erro na mineração: {e}")
