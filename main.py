@@ -1,38 +1,33 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+from src.scraper import buscar_oferta
 from dotenv import load_dotenv
 import os
 
-# Carrega variáveis de ambiente
 load_dotenv()
-
-# Importa a função de mineração
-from src.scraper import buscar_oferta
 
 app = Flask(__name__)
 CORS(app)
 
 @app.route("/")
 def home():
-    return jsonify({"mensagem": "API do MineraZap rodando com sucesso!"})
+    return "Minera Zap rodando com sucesso!"
 
 @app.route("/api/minera", methods=["POST"])
 def minera():
+    data = request.get_json()
+    termo = data.get("termo")
+
+    if not termo:
+        return jsonify({"error": "Campo 'termo' é obrigatório"}), 400
+
     try:
-        data = request.get_json()
-        termo = data.get("termo", "")
-
-        if not termo:
-            return jsonify({"erro": "Campo 'termo' é obrigatório"}), 400
-
         print(f"Iniciando mineração para: {termo}")
         resultado = buscar_oferta(termo)
-
-        return jsonify({"status": "sucesso", "resultado": resultado}), 200
-
+        return jsonify({"status": "sucesso", "resultado": resultado})
     except Exception as e:
+        print(f"Erro na mineração: {e}")
         return jsonify({"error": str(e)}), 500
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5001))
-    app.run(host="0.0.0.0", port=port, debug=True)
+    app.run(debug=True, port=5001)
