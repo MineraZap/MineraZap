@@ -1,41 +1,34 @@
-from flask import Flask, request, jsonify
-from flask_cors import CORS
-from src.scraper import buscar_oferta
-from dotenv import load_dotenv
 import os
 
-load_dotenv()
+from flask import Flask, request, jsonify
+from flask_cors import CORS
+from src.scraper import minerar_termo
 
 app = Flask(__name__)
 CORS(app)
 
-@app.route("/")
-def home():
-    return "Minera Zap rodando com sucesso!"
+@app.route('/')
+def index():
+    return jsonify({"mensagem": "API MineraZap está online."})
 
 @app.route('/api/minera', methods=['POST'])
-def minera():
+def api_minera():
     data = request.get_json()
-    termo = data.get('termo')
+    termo = data.get("termo")
+
+    if not termo:
+        return jsonify({"error": "Termo de busca não fornecido"}), 400
 
     try:
-        resultado = buscar_oferta(termo)
-        return jsonify(resultado)
+        resultado = minerar_termo(termo)
+        return jsonify(resultado), 200
     except Exception as e:
-        return jsonify({"status": "error", "message": str(e)}), 500
-
-
-    try:
-        print(f"Iniciando mineração para: {termo}")
-        resultado = buscar_oferta(termo)
-
-        return jsonify({"status": "sucesso", "resultado": resultado})
-    except Exception as e:
-        print(f"Erro na mineração: {e}")
-        return jsonify({"error": str(e)}), 500
-
+        print(f"Erro durante mineração: {str(e)}")
+        return jsonify({
+            "status": "error",
+            "code": 500,
+            "message": f"Erro interno: {str(e)}"
+        }), 500
 if __name__ == "__main__":
-    app.run(debug=True, port=5001)
-import subprocess
-subprocess.run(["playwright", "install", "chromium"])
-
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
