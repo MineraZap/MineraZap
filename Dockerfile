@@ -20,7 +20,8 @@ RUN python -m venv /opt/venv && \
     pip install --upgrade pip && \
     pip install -r requirements.txt && \
     pip install playwright && \
-    playwright install chromium
+   RUN python -m playwright install chromium
+
 
 ENV PATH="/opt/venv/bin:$PATH"
 
