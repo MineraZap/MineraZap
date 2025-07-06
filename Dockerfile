@@ -20,9 +20,9 @@ RUN python -m venv /opt/venv && \
     pip install --upgrade pip && \
     pip install -r requirements.txt && \
     pip install playwright && \
-   RUN python -m playwright install chromium
+    python -m playwright install chromium
 
-
+# Define o PATH do venv
 ENV PATH="/opt/venv/bin:$PATH"
 
 # Expõe a porta
