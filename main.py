@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify
-from src.scraper import buscar_oferta  # Certifique-se de que existe e está funcional
+from src.scraper import minerar_termo # Certifique-se de que existe e está funcional
 
 app = Flask(__name__)
 
@@ -15,7 +15,7 @@ def minerar():
     if not produto:
         return jsonify({"resposta": "Nenhum produto informado."}), 400
 
-    resultado = buscar_oferta(produto)
+    resultado = minerar_termo(produto)
 
     if isinstance(resultado, str):
         return jsonify({"resposta": resultado})
