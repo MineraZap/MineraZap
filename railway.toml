@@ -1,2 +1,8 @@
 [build]
 builder = "nixpacks"
+
+[start]
+cmd = "gunicorn wsgi:app"
+
+[setup]
+postinstall = "./postinstall.sh"
