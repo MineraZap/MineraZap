@@ -8,25 +8,25 @@ RUN apt-get update && apt-get install -y \
   libxext6 libglib2.0-dev libdbus-1-3 libdrm2 libxtst6 \
   && apt-get clean
 
-# Cria pasta do app
+# Define diretório da aplicação
 WORKDIR /app
 
-# Copia os arquivos
+# Copia os arquivos do projeto
 COPY . /app
 
-# Instala dependências do Python e do projeto
+# Cria e ativa virtualenv, instala dependências e o Chromium
 RUN python -m venv /opt/venv && \
     . /opt/venv/bin/activate && \
     pip install --upgrade pip && \
     pip install -r requirements.txt && \
     pip install playwright && \
-    python -m playwright install chromium
+    python -m playwright install --with-deps chromium
 
-# Define o PATH do venv
+# Garante que o caminho da virtualenv esteja no ambiente
 ENV PATH="/opt/venv/bin:$PATH"
 
-# Expõe a porta
+# Expõe a porta usada pelo Flask
 EXPOSE 5000
 
-# Comando de inicialização
+# Comando para iniciar a aplicação
 CMD ["python", "main.py"]
