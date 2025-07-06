@@ -13,7 +13,7 @@ def minerar():
 
     try:
         with sync_playwright() as p:
-            browser = p.chromium.launch(headless=True)
+            browser = p.chromium.launch(headless=False)
             context = browser.new_context()
             context.set_default_timeout(15000)
             page = context.new_page()
