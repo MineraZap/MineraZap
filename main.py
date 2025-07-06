@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify
-from playwright.sync_api import sync_playwright
+from playwright.sync_api import sync_playwright, TimeoutError as PlaywrightTimeout
 
 app = Flask(__name__)
 
@@ -16,7 +16,14 @@ def minerar():
             url = f"https://www.facebook.com/ads/library/?active_status=all&ad_type=all&country=BR&q={termo}&search_type=keyword_unordered"
             page.goto(url)
 
-            page.wait_for_selector('div:has-text("Patrocinado")', timeout=30000)
+            try:
+                page.wait_for_selector('div:has-text("Patrocinado")', timeout=60000)
+            except PlaywrightTimeout:
+                return jsonify({
+                    "status": "erro",
+                    "mensagem": "Tempo excedido para carregar anúncios. Tente novamente."
+                })
+
             cards = page.locator('div:has-text("Patrocinado")').all()
 
             if not cards:
@@ -29,8 +36,8 @@ def minerar():
             texto = anuncio.inner_text().split("\n")
             titulo = texto[0] if texto else "Sem texto visível"
 
-            nome_pagina = anuncio.locator('span[class*="xu06os2"]').first.inner_text() if anuncio.locator('span[class*="xu06os2"]').count() > 0 else "Desconhecida"
-            imagem = anuncio.locator('img').first.get_attribute('src') if anuncio.locator('img').count() > 0 else "Imagem não encontrada"
+            nome_pagina = anuncio.locator('span[class*="xu06os2"]').first.inner_text()
+            imagem = anuncio.locator('img').first.get_attribute('src')
 
             return jsonify({
                 "status": "sucesso",
