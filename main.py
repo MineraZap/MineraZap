@@ -1,19 +1,25 @@
 from flask import Flask, request, jsonify
-from src.scraper import minerar_termo  # ajustado para refletir sua estrutura
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)
 
-@app.route("/", methods=["GET"])
-def status():
-    return jsonify({"mensagem": "API MineraZap está online."})
+@app.route("/")
+def home():
+    return "API do MineraZap está online!"
 
 @app.route("/api/minera", methods=["POST"])
-def minerar():
+def minera():
     data = request.get_json()
     termo = data.get("termo")
 
     if not termo:
-        return jsonify({"erro": "Campo 'termo' é obrigatório"}), 400
+        return jsonify({"erro": "O campo 'termo' é obrigatório"}), 400
 
-    resultado = minerar_termo(termo)
-    return jsonify(resultado)
+    # Aqui entraria a lógica de mineração com o Playwright, etc.
+    # Neste exemplo, está apenas simulando a resposta
+    return jsonify({
+        "status": "sucesso",
+        "termo_recebido": termo,
+        "resultados": ["Exemplo 1", "Exemplo 2"]
+    })

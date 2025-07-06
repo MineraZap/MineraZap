@@ -1,0 +1,1 @@
+web: python -m playwright install --with-deps && python wsgi.py
