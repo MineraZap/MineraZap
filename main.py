@@ -1,36 +1,31 @@
-import os
-
 from flask import Flask, request, jsonify
-from flask_cors import CORS
-from src.scraper import minerar_termo
+from src.scraper import buscar_oferta  # Certifique-se de que existe e está funcional
 
 app = Flask(__name__)
-CORS(app)
+
+@app.route("/", methods=["GET"])
+def status():
+    return jsonify({"mensagem": "API MineraZap está online."})
 
 @app.route("/minerar", methods=["POST"])
 def minerar():
-    ...
+    dados = request.get_json()
+    produto = dados.get("produto")
 
-    return jsonify({"mensagem": "API MineraZap está online."})
+    if not produto:
+        return jsonify({"resposta": "Nenhum produto informado."}), 400
 
-@app.route('/api/minera', methods=['POST'])
-def api_minera():
-    data = request.get_json()
-    termo = data.get("termo")
+    resultado = buscar_oferta(produto)
 
-    if not termo:
-        return jsonify({"error": "Termo de busca não fornecido"}), 400
+    if isinstance(resultado, str):
+        return jsonify({"resposta": resultado})
 
-    try:
-        resultado = minerar_termo(termo)
-        return jsonify(resultado), 200
-    except Exception as e:
-        print(f"Erro durante mineração: {str(e)}")
-        return jsonify({
-            "status": "error",
-            "code": 500,
-            "message": f"Erro interno: {str(e)}"
-        }), 500
-if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port)
+    resposta_formatada = (
+        f"🟢 *Oferta Encontrada*\n"
+        f"*Produto:* {resultado['titulo']}\n"
+        f"*Anúncios ativos:* {resultado['quantidade']}\n"
+        f"*Link:* {resultado['link']}\n"
+        f"*Imagem:* {resultado['imagem']}"
+    )
+
+    return jsonify({"resposta": resposta_formatada})
