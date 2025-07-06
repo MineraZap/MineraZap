@@ -10,14 +10,14 @@ def minerar():
 
     try:
         with sync_playwright() as p:
-            browser = p.chromium.launch(headless=True)
+            browser = p.chromium.launch(headless=True, timeout=8000)
             page = browser.new_page()
 
             url = f"https://www.facebook.com/ads/library/?active_status=all&ad_type=all&country=BR&q={termo}&search_type=keyword_unordered"
-            page.goto(url)
+            page.goto(url, timeout=8000)
 
             try:
-                page.wait_for_selector('div:has-text("Patrocinado")', timeout=60000)
+                page.wait_for_selector('div:has-text("Patrocinado")', timeout=8000)
             except PlaywrightTimeout:
                 return jsonify({
                     "status": "erro",
@@ -25,7 +25,6 @@ def minerar():
                 })
 
             cards = page.locator('div:has-text("Patrocinado")').all()
-
             if not cards:
                 return jsonify({
                     "status": "erro",
@@ -33,20 +32,26 @@ def minerar():
                 })
 
             anuncio = cards[0]
-            texto = anuncio.inner_text().split("\n")
-            titulo = texto[0] if texto else "Sem texto visível"
+            linhas = anuncio.inner_text().split("\n")
+            titulo = linhas[0] if linhas else "Sem texto visível"
 
-            nome_pagina = anuncio.locator('span[class*="xu06os2"]').first.inner_text()
-            imagem = anuncio.locator('img').first.get_attribute('src')
+            try:
+                imagem = anuncio.locator("img").first.get_attribute("src")
+            except:
+                imagem = "Não encontrado"
+
+            try:
+                pagina = anuncio.locator('span:below(img)').first.inner_text()
+            except:
+                pagina = "Não identificado"
 
             return jsonify({
                 "status": "sucesso",
                 "termo_recebido": termo,
                 "resultado": {
                     "titulo": titulo,
-                    "pagina": nome_pagina,
+                    "pagina": pagina,
                     "imagem": imagem,
-                    "total_ativos": len(cards),
                     "biblioteca": url
                 }
             })
