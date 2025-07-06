@@ -7,8 +7,10 @@ from src.scraper import minerar_termo
 app = Flask(__name__)
 CORS(app)
 
-@app.route('/')
-def index():
+@app.route("/minerar", methods=["POST"])
+def minerar():
+    ...
+
     return jsonify({"mensagem": "API MineraZap está online."})
 
 @app.route('/api/minera', methods=['POST'])
