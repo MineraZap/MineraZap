@@ -1,3 +1,1 @@
-playwright
-flask
-flask-cors
+pip freeze > requirements.txt
