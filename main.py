@@ -1,6 +1,6 @@
 import os
 from flask import Flask, request, jsonify
-from src.scraper_demo import minerar_anuncios
+from src.scraper import minerar_anuncios
 
 app = Flask(__name__)
 
